@@ -1,0 +1,25 @@
+{
+  "version": "0.1",
+  "name": "BadSquares",
+  "description": "",
+  "launch_path": "/index.html",
+  "icons": {
+    "16": "/img/icons/mortar-16.png",
+    "48": "/img/icons/mortar-48.png",
+    "128": "/img/icons/iconGalQuest-128.png"
+  },
+  "developer": {
+    "name": "Justin Weathersby",
+    "url": "http://example.com"
+  },
+  "installs_allowed_from": [
+    "*"
+  ],
+  "locales": {
+    "es": {
+      "name": "BadSquares",
+      "description": ""
+    }
+  },
+  "default_locale": "en"
+}
