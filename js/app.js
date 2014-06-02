@@ -74,7 +74,7 @@ window.onload = function()
     {
         //context.clearRect(this.x, this.y, SQUARE_SIZE_X, SQUARE_SIZE_Y);
         context.fillStyle = this.color;
-        context.fillRect(this.x, this.y, SQUARE_SIZE_X, SQUARE_SIZE_Y);
+        context.fillRect(Math.floor(this.x), Math.floor(this.y), SQUARE_SIZE_X, SQUARE_SIZE_Y);
 
     };
 
