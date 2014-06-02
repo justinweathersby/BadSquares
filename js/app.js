@@ -51,18 +51,32 @@ window.onload = function()
     var squares = new Array(numOfSquares);
     
 
-    function square(color, live, x, y) 
+    function Square(x, y) 
     {
         //-Default Values
-        this.live  = live;
+        this.x = x;
+        this.y = y;
+        this.color = getRandomColor();
+        this.live  = true;
         speed = 50;
         direction = 1;
         sizeX = SQUARE_SIZE_X;
         sizeY = SQUARE_SIZE_Y;
-        this.color = color;
+    }
+    Square.prototype.resetPos = function (x,y)
+    {
+        this.live = true;
         this.x = x;
         this.y = y;
+        this.color = getRandomColor();
     }
+    Square.prototype.draw = function (context)
+    {
+        //context.clearRect(this.x, this.y, SQUARE_SIZE_X, SQUARE_SIZE_Y);
+        context.fillStyle = this.color;
+        context.fillRect(this.x, this.y, SQUARE_SIZE_X, SQUARE_SIZE_Y);
+
+    };
 
 
 
@@ -76,6 +90,7 @@ window.onload = function()
     });
 
     // Let's play this game!
+    initSquares();
     reset();
     var then = Date.now();
     var running = true;
@@ -92,10 +107,6 @@ window.onload = function()
     // Reset game to original state
     function reset() 
     {
-      
-
-         initSquares();
-
         //--Reset Player Scores
         player.score = 0;
         player.correct = 0;
@@ -112,78 +123,46 @@ window.onload = function()
         main();
     }
 
-    // Update game objects.
-    // We'll use GameInput to detect which keys are down.
-    // If you look at the bottom of index.html, we load GameInput
-    // from js/input.js right before app.js
-    function update(dt) {
-        // Speed in pixels per second
-        var playerSpeed = 50;
-
-        if(GameInput.isDown('DOWN')) {
-            // dt is the number of seconds passed, so multiplying by
-            // the speed gives you the number of pixels to move
-            pause();
-        }
-
-        if(GameInput.isDown('UP')) {
-            unpause();
-        }
-
-        if(GameInput.isDown('LEFT')) {
-            square.x -= playerSpeed * dt;
-        }
-
-        if(GameInput.isDown('RIGHT')) {
-            square.x += playerSpeed * dt;
-        }
-
-         //--Update Falling Squares Position
-        for(var i = 0; i < numOfSquares; i++)
-        {
-            if (squares[i].y + (SQUARE_SIZE_Y / 2) > ((COLUMN_COUNT-1) * (SQUARE_SIZE_Y + SQUARE_PADDING)))
-            {
-                squares[i].live  = false;
-                squares[i] = new square(getRandomColor(), true, squares[i].x, (SQUARE_PADDING - SQUARE_SIZE_Y));
-            }
-            else
-            {
-                squares[i].y += playerSpeed * dt;
-            }
-            
-        }
-
-        // You can pass any letter to `isDown`, in addition to DOWN,
-        // UP, LEFT, RIGHT, and SPACE:
-        // if(GameInput.isDown('a')) { ... }
-    }
-
     //--Draw everything
-    function render() 
+    function render(dt) 
     {
+        var squareSpeed = 50;
+
         //--Render Background
-        var blueGradient = gameBoardContext.createLinearGradient(0,0, gameBoard.width, gameBoard.height);
-        blueGradient.addColorStop(0.000, 'rgba(25, 216, 255, 1.000)');
-        blueGradient.addColorStop(1.000, 'rgba(255, 255, 255, 1.000)');
-        gameBoardContext.rect(0, 0, gameBoard.width, gameBoard.height);
-        gameBoardContext.fillStyle = blueGradient;
-        gameBoardContext.fill();
-   
+        
+        
+        gameBoardContext.clearRect(0, 0, gameBoard.width, gameBoard.height);
+        //gameBoardContext.fillStyle = 'white';
+        //gameBoardContext.fill();
+        
+
         //--Render Squares
         for(var i = 0; i < numOfSquares; i++)
         {
+            //--Update Squares
+            if (squares[i].y + (SQUARE_SIZE_Y / 2) > ((COLUMN_COUNT-1) * (SQUARE_SIZE_Y + SQUARE_PADDING)))
+            {
+                squares[i].live  = false;
+                squares[i].resetPos(squares[i].x, (SQUARE_PADDING - SQUARE_SIZE_Y));
+            }
+            else
+            {
+                squares[i].y += squareSpeed * dt;
+            }
+
             //--Test For Live Square
             if (squares[i].live == true)
             {
-                gameBoardContext.fillStyle = squares[i].color;
-                gameBoardContext.fillRect(squares[i].x, squares[i].y, SQUARE_SIZE_X, SQUARE_SIZE_Y);
+                squares[i].draw(gameBoardContext);
             }
         }
+
     }
 
     // The main game loop
     function main() 
     {
+
         if(!running) 
         {
             return;
@@ -191,9 +170,7 @@ window.onload = function()
 
         var now = Date.now();
         var dt = (now - then) / 1000.0;
-
-        update(dt);
-        render();
+        render(dt);
 
         then = now;
         requestAnimFrame(main);
@@ -207,7 +184,7 @@ window.onload = function()
         //--Initiate Squares
         for(var i = 0; i < numOfSquares; i++)
         {
-            squares[i] = new square(getRandomColor(), true, (row * SQUARE_SPACING + SQUARE_PADDING), (column * SQUARE_SPACING + SQUARE_PADDING));
+            squares[i] = new Square((row * SQUARE_SPACING + SQUARE_PADDING), (column * SQUARE_SPACING + SQUARE_PADDING));
            
 
             if(row == ROW_COUNT - 1)
@@ -230,13 +207,13 @@ window.onload = function()
 
         switch(rndNum){
             case 1:
-                color = 'orange';
+                color = '#086FA1';
             break;
             case 2:
-                color = 'red';
+                color = '#1D7074';
             break;
             case 3:
-                color = 'blue';
+                color = '#63ADD0';
             break;
             case 4:
                 color = 'black';
@@ -246,4 +223,8 @@ window.onload = function()
 
         return color;
     }
+
+
 };
+
+

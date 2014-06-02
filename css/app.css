@@ -31,6 +31,9 @@ p {
   display: none;
 }
 
+#gameBoard{
+  
+}
 canvas {
   display: block;
 }
