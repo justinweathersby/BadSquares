@@ -23,6 +23,9 @@ window.onload = function()
     var ROW_COUNT = 4;
     var COLUMN_COUNT = 7;
 
+    var userX = 0;
+    var userY = 0;
+
     // Create the canvas
     var gameBoard;
     var gameBoardContext;
@@ -37,6 +40,8 @@ window.onload = function()
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas, false);
         window.addEventListener('orientationchange', resizeCanvas, false);
+
+        gameBoard.addEventListener("mousedown", setSelection, false)
     }
 
     //--Player Values
@@ -145,17 +150,30 @@ window.onload = function()
                 squares[i].live  = false;
                 squares[i].resetPos(squares[i].x, (SQUARE_PADDING - SQUARE_SIZE_Y));
             }
-            else
-            {
-                squares[i].y += squareSpeed * dt;
-            }
 
             //--Test For Live Square
             if (squares[i].live == true)
             {
+                squares[i].y += squareSpeed * dt;
                 squares[i].draw(gameBoardContext);
             }
+
+            if (userX >= squares[i].x && 
+                userX <= (squares[i].x + SQUARE_SIZE_X) &&
+                userY >= squares[i].y && 
+                userY <= (squares[i].y + SQUARE_SIZE_Y) &&
+                squares[i].color == 'black')
+            {
+                player.score+= 10;
+                player.correct ++;
+                console.log("SCore:" + player.score);
+            }
         }
+        
+
+        //--Reset User
+        userX = 0;
+        userY = 0;
 
     }
 
@@ -223,6 +241,12 @@ window.onload = function()
 
         return color;
     }
+
+    function setSelection(event)
+  {
+      userX = event.pageX;
+      userY = event.pageY;
+  }
 
 
 };
