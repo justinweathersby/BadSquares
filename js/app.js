@@ -27,12 +27,16 @@ window.onload = function()
     var userY = 0;
 
     // Create the canvas
-    var gameBoard;
-    var gameBoardContext;
+    var gameBoard, inputPanel;
+    var gameBoardContext, panelContext;
 
     gameBoard  = document.getElementById("gameBoard");
     gameBoard.width = window.innerWidth;
     gameBoard.length = window.innerHeight;
+
+    inputPanel  = document.getElementById("inputPanel");
+    inputPanel.width = gameBoard.width;
+    inputPanel.length = gameBoard.length / 4;
 
     if (gameBoard.getContext) 
     {
@@ -42,6 +46,14 @@ window.onload = function()
         window.addEventListener('orientationchange', resizeCanvas, false);
 
         gameBoard.addEventListener("mousedown", setSelection, false)
+
+    }
+
+    if(inputPanel.getContext)
+    {
+        panelContext = inputPanel.getContext("2d");
+        panelContext.font = "20px Georgia";
+
     }
 
     //--Player Values
@@ -52,6 +64,7 @@ window.onload = function()
     };
 
     //--Square Values
+    var squareSpeed = 50;
     var numOfSquares = ROW_COUNT * COLUMN_COUNT;
     var squares = new Array(numOfSquares);
     
@@ -79,8 +92,8 @@ window.onload = function()
     {
         //context.clearRect(this.x, this.y, SQUARE_SIZE_X, SQUARE_SIZE_Y);
         context.fillStyle = this.color;
-        context.fillRect(Math.floor(this.x), Math.floor(this.y), SQUARE_SIZE_X, SQUARE_SIZE_Y);
-
+        //context.fillRect(Math.floor(this.x), Math.floor(this.y), SQUARE_SIZE_X, SQUARE_SIZE_Y);
+        context.fillRect(this.x, this.y, SQUARE_SIZE_X, SQUARE_SIZE_Y);
     };
 
 
@@ -131,44 +144,49 @@ window.onload = function()
     //--Draw everything
     function render(dt) 
     {
-        var squareSpeed = 50;
-
         //--Render Background
-        
-        
         gameBoardContext.clearRect(0, 0, gameBoard.width, gameBoard.height);
         //gameBoardContext.fillStyle = 'white';
         //gameBoardContext.fill();
         
+        for(var i = 0; i < numOfSquares; i++)
+        {
+            squares[i].y += squareSpeed * dt;
+        }
 
         //--Render Squares
         for(var i = 0; i < numOfSquares; i++)
         {
-            //--Update Squares
-            if (squares[i].y + (SQUARE_SIZE_Y / 2) > ((COLUMN_COUNT-1) * (SQUARE_SIZE_Y + SQUARE_PADDING)))
-            {
-                squares[i].live  = false;
-                squares[i].resetPos(squares[i].x, (SQUARE_PADDING - SQUARE_SIZE_Y));
-            }
 
             //--Test For Live Square
             if (squares[i].live == true)
             {
-                squares[i].y += squareSpeed * dt;
                 squares[i].draw(gameBoardContext);
-            }
 
-            if (userX >= squares[i].x && 
+                if (userX >= squares[i].x && 
                 userX <= (squares[i].x + SQUARE_SIZE_X) &&
                 userY >= squares[i].y && 
                 userY <= (squares[i].y + SQUARE_SIZE_Y) &&
                 squares[i].color == 'black')
-            {
-                player.score+= 10;
-                player.correct ++;
-                console.log("SCore:" + player.score);
+                {
+                    player.score+= 10;
+                    player.correct ++;
+                    squareSpeed+= 2;
+                    squares[i].live = false;
+                }
             }
+
+            //--Update Squares
+            if (squares[i].y + (SQUARE_SIZE_Y / 2) > ((COLUMN_COUNT-1) * (SQUARE_SIZE_Y + SQUARE_PADDING)))
+            {
+                squares[i].resetPos(squares[i].x, (SQUARE_PADDING - SQUARE_SIZE_Y));
+            }
+
+            
         }
+        panelContext.clearRect(0,0,gameBoard.width, gameBoard.length / 4)
+        panelContext.fillStyle = 'white';
+        panelContext.fillText("Score:" + squareSpeed, 100, 100);
         
 
         //--Reset User
@@ -176,6 +194,8 @@ window.onload = function()
         userY = 0;
 
     }
+
+    var now, dt;
 
     // The main game loop
     function main() 
@@ -186,8 +206,8 @@ window.onload = function()
             return;
         }
 
-        var now = Date.now();
-        var dt = (now - then) / 1000.0;
+        now = Date.now();
+        dt = (now - then) / 1000.0;
         render(dt);
 
         then = now;
@@ -223,22 +243,23 @@ window.onload = function()
         var rndNum = Math.floor((Math.random() * 4) + 1);
         var color = 'white';
 
-        switch(rndNum){
-            case 1:
-                color = '#086FA1';
-            break;
-            case 2:
-                color = '#1D7074';
-            break;
-            case 3:
-                color = '#63ADD0';
-            break;
-            case 4:
-                color = 'black';
-            break;
-            
+        if (rndNum == 1)
+        {
+            color = '#086FA1';
         }
-
+        else if (rndNum == 2)
+        {
+            color = '#1D7074';
+        }
+        else if(rndNum == 3)
+        {
+            color = '#63ADD0';
+        }
+        else if(rndNum == 4)
+        {
+            color = 'black';
+        }
+        
         return color;
     }
 

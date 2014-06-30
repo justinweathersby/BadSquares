@@ -7,8 +7,7 @@ body {
 
 body {
     font-family: Helvetica, Arial, sans;
-    background: linear-gradient(0deg, #aaa, #ccc 30%, #fff);
-    background-size: 100% 100%;
+    overflow: hidden;
 }
 
 main {
@@ -32,7 +31,24 @@ p {
 }
 
 #gameBoard{
-  
+    background-image: -o-linear-gradient(left top, #2EB1F7 10%, #DFF0ED 78%);
+    background-image: -moz-linear-gradient(left top, #2EB1F7 10%, #DFF0ED 78%);
+    background-image: -webkit-linear-gradient(left top, #2EB1F7 10%, #DFF0ED 78%);
+    background-image: -ms-linear-gradient(left top, #2EB1F7 10%, #DFF0ED 78%);
+    background-image: linear-gradient(to left top, #2EB1F7 10%, #DFF0ED 78%);
+
+    position:absolute;
+    left:0px;
+    top:0px;
+    z-index: 1;
+}
+
+#inputPanel{
+  position:absolute;
+    left:0px;
+    bottom:0px;
+  z-index: 2;
+  background-color:black;
 }
 canvas {
   display: block;
